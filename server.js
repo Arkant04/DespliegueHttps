@@ -27,16 +27,18 @@ db.run(`CREATE TABLE IF NOT EXISTS messages (
 });
 
 // API key (la definirás tú)
-const API_KEY = 'tu-api-key-secreta';
+const API_KEY = '1234';
 
 // Middleware para verificar la API key
 const requireApiKey = (req, res, next) => {
   const apiKey = req.header('apikey');
+  console.log('API Key recibida:', apiKey); // Esto imprimirá el valor del encabezado `apikey`
   if (apiKey !== API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
 };
+
 
 // Endpoint GET / que devuelve un mensaje de bienvenida
 app.get('/', (req, res) => {
@@ -72,6 +74,7 @@ app.post('/messages', requireApiKey, (req, res) => {
     res.status(201).json({ message: 'Message added successfully', id: this.lastID });
   });
 });
+
 
 // Iniciar el servidor
 app.listen(port, () => {
