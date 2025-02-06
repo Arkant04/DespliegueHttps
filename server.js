@@ -3,6 +3,8 @@ const https = require('https');
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const port = 3000;
+const fs = require('fs');
+const path = require('path');
 
 // Middleware para parsear el cuerpo de las peticiones en formato JSON
 app.use(express.json());
