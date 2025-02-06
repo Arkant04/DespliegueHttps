@@ -1,4 +1,5 @@
 const express = require('express');
+const https = require('https');
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const port = 3000;
@@ -76,7 +77,13 @@ app.post('/messages', requireApiKey, (req, res) => {
 });
 
 
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+// Configuración de HTTPS
+const options = {
+  cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem')),
+  key: fs.readFileSync(path.join(__dirname, 'privkey.pem'))
+};
+
+// Crear servidor HTTPS
+https.createServer(options, app).listen(port, () => {
+  console.log(`Servidor HTTPS en https://localhost:${port}`);
 });
