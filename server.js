@@ -9,7 +9,11 @@ const path = require('path');
 const http = require('http');
 
 // Middleware para habilitar CORS
-app.use(cors());  // Permite solicitudes de cualquier origen
+app.use(cors({
+  origin: '*',  // Permitir solicitudes de cualquier origen
+  methods: 'GET,POST',  // Solo permitir estos métodos (opcional)
+  allowedHeaders: 'Content-Type, apikey',  // Permitir ciertos encabezados
+}));
 
 // Middleware para parsear el cuerpo de las peticiones en formato JSON
 app.use(express.json());
