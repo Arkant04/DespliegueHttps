@@ -1,10 +1,15 @@
 const express = require('express');
 const https = require('https');
 const sqlite3 = require('sqlite3').verbose();
+const cors = require('cors');  // Importamos cors
 const app = express();
 const port = 3000;
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
+
+// Middleware para habilitar CORS
+app.use(cors());  // Permite solicitudes de cualquier origen
 
 // Middleware para parsear el cuerpo de las peticiones en formato JSON
 app.use(express.json());
@@ -78,14 +83,21 @@ app.post('/messages', requireApiKey, (req, res) => {
   });
 });
 
+console.log('Entorno:', process.env.NODE_ENV);
+if(process.env.NODE_ENV === 'production') {
+    // Configuración de HTTPS
+    const options = {
+      cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem')),
+      key: fs.readFileSync(path.join(__dirname, 'privkey.pem'))
+    };
 
-// Configuración de HTTPS
-const options = {
-  cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem')),
-  key: fs.readFileSync(path.join(__dirname, 'privkey.pem'))
-};
-
-// Crear servidor HTTPS
-https.createServer(options, app).listen(port, () => {
-  console.log(`Servidor HTTPS en https://localhost:${port}`);
-});
+    // Crear servidor HTTPS
+    https.createServer(options, app).listen(port, () => {
+      console.log(`Servidor HTTPS en https://cyberbunny.online:${port}`);
+    });
+}
+else{
+    http.createServer(app).listen(port, () => {
+      console.log(`Servidor HTTP en http://localhost:${port}`);
+    });
+}
