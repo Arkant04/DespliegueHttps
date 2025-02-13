@@ -11,56 +11,27 @@
   <div id="messagesContainer"></div>
 
   <script>
-    // Lista de URLs a las que se realizará el fetch
-    const urls = [
-      'http://dev1.cyberbunny.online:3000/messages',
-      'http://dev2.cyberbunny.online:3000/messages',
-      'http://dev3.cyberbunny.online:3000/messages',
-      'http://dev4.cyberbunny.online:3000/messages',
-      'http://dev5.cyberbunny.online:3000/messages'
-    ];
+    function fetchAndDisplay(url) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            const pre = document.createElement('pre');
+            pre.innerText = JSON.stringify(data, null, 2);
+            document.querySelector("#content").appendChild(pre);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
 
-    // Función para obtener los mensajes de todas las URLs
-    async function fetchMessages() {
-      try {
-        const responses = await Promise.all(urls.map(url => 
-          fetch(url, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'  // Eliminamos el 'apikey' ya que no es necesario
-            }
-          })
-        ));
+const urls = [
+    'http://dev1.cyberbunny.online:3000/messages',
+    'http://dev2.cyberbunny.online:3000/messages',
+    'http://dev3.cyberbunny.online:3000/messages',
+    'http://dev4.cyberbunny.online:3000/messages',
+    'http://dev5.cyberbunny.online:3000/messages'
+];
 
-        // Verificar que todas las respuestas fueron correctas
-        const data = await Promise.all(responses.map(response => {
-          if (!response.ok) {
-            throw new Error('Error al obtener los mensajes de alguna URL');
-          }
-          return response.json();
-        }));
-
-        // Limpiar el contenedor de mensajes
-        const messagesContainer = document.getElementById('messagesContainer');
-        messagesContainer.innerHTML = '';
-
-        // Mostrar los mensajes de cada respuesta
-        data.forEach(messagesData => {
-          const messages = messagesData.messages || [];
-          messages.forEach(message => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${message.username}: ${message.message}`;
-            messagesContainer.appendChild(messageElement);
-          });
-        });
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-
-    // Agregar el evento al botón
-    const button = document.getElementById('getMessagesBtn');
-    button.addEventListener('click', fetchMessages);
-  </script>
+urls.forEach(url => fetchAndDisplay(url));
+</script>
 </body>
 </html>
