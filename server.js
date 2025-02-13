@@ -17,6 +17,7 @@ app.use(cors({
 
 // Middleware para parsear el cuerpo de las peticiones en formato JSON
 app.use(express.json());
+app.use(express.static('/public'));
 
 // Configurar la base de datos SQLite
 const db = new sqlite3.Database('./messages.db', (err) => {

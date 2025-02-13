@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obtener Mensajes</title>
+</head>
+<body>
+  <h1>Mensajes</h1>
+  <button id="getMessagesBtn">Obtener Mensajes</button>
+  <div id="messagesContainer"></div>
+
+  <script>
+    // Lista de URLs a las que se realizará el fetch
+    const urls = [
+      'http://dev1.cyberbunny.online:3000/messages',
+      'http://dev2.cyberbunny.online:3000/messages',
+      'http://dev3.cyberbunny.online:3000/messages',
+      'http://dev4.cyberbunny.online:3000/messages',
+      'http://dev5.cyberbunny.online:3000/messages'
+    ];
+
+    // Función para obtener los mensajes de todas las URLs
+    async function fetchMessages() {
+      try {
+        const responses = await Promise.all(urls.map(url => 
+          fetch(url, {
+            method: 'GET',
+            headers: {
+              'apikey': '1234',  // Tu API Key (si se necesita)
+              'Content-Type': 'application/json'
+            }
+          })
+        ));
+
+        // Verificar que todas las respuestas fueron correctas
+        const data = await Promise.all(responses.map(response => {
+          if (!response.ok) {
+            throw new Error('Error al obtener los mensajes de alguna URL');
+          }
+          return response.json();
+        }));
+
+        // Limpiar el contenedor de mensajes
+        const messagesContainer = document.getElementById('messagesContainer');
+        messagesContainer.innerHTML = '';
+
+        // Mostrar los mensajes de cada respuesta
+        data.forEach(messagesData => {
+          const messages = messagesData.messages || [];
+          messages.forEach(message => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${message.username}: ${message.message}`;
+            messagesContainer.appendChild(messageElement);
+          });
+        });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Agregar el evento al botón
+    const button = document.getElementById('getMessagesBtn');
+    button.addEventListener('click', fetchMessages);
+  </script>
+</body>
+</html>
