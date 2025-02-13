@@ -1,7 +1,7 @@
 const express = require('express');
 const https = require('https');
 const sqlite3 = require('sqlite3').verbose();
-const cors = require('cors');  // Importamos cors
+const cors = require('cors');
 const app = express();
 const port = 3000;
 const fs = require('fs');
@@ -12,7 +12,7 @@ const http = require('http');
 app.use(cors({
   origin: '*',  // Permitir solicitudes de cualquier origen
   methods: 'GET,POST',  // Solo permitir estos métodos (opcional)
-  allowedHeaders: 'Content-Type, apikey',  // Permitir ciertos encabezados
+  allowedHeaders: 'Content-Type',  // Solo permitir el encabezado Content-Type
 }));
 
 // Middleware para parsear el cuerpo de las peticiones en formato JSON
@@ -39,27 +39,13 @@ db.run(`CREATE TABLE IF NOT EXISTS messages (
   }
 });
 
-// API key (la definirás tú)
-const API_KEY = '1234';
-
-// Middleware para verificar la API key
-const requireApiKey = (req, res, next) => {
-  const apiKey = req.header('apikey');
-  console.log('API Key recibida:', apiKey); // Esto imprimirá el valor del encabezado `apikey`
-  if (apiKey !== API_KEY) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-};
-
-
 // Endpoint GET / que devuelve un mensaje de bienvenida
 app.get('/', (req, res) => {
   res.json({ message: '¡Bienvenido al servidor!' });
 });
 
 // Endpoint GET /messages que devuelve los mensajes almacenados
-app.get('/messages', requireApiKey, (req, res) => {
+app.get('/messages', (req, res) => {
   db.all('SELECT * FROM messages', (err, rows) => {
     if (err) {
       return res.status(500).json({ error: 'Error al obtener los mensajes' });
@@ -69,7 +55,7 @@ app.get('/messages', requireApiKey, (req, res) => {
 });
 
 // Endpoint POST /messages que permite añadir un mensaje y un nombre de usuario opcional
-app.post('/messages', requireApiKey, (req, res) => {
+app.post('/messages', (req, res) => {
   const { message, username } = req.body;
 
   if (!message) {
@@ -87,25 +73,6 @@ app.post('/messages', requireApiKey, (req, res) => {
     res.status(201).json({ message: 'Message added successfully', id: this.lastID });
   });
 });
-
-console.log('Entorno:', process.env.NODE_ENV);
-// if(process.env.NODE_ENV === 'production') {
-//     // Configuración de HTTPS
-//     const options = {
-//       cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem')),
-//       key: fs.readFileSync(path.join(__dirname, 'privkey.pem'))
-//     };
-
-//     // Crear servidor HTTPS
-//     https.createServer(options, app).listen(port, () => {
-//       console.log(`Servidor HTTPS en https://cyberbunny.online:${port}`);
-//     });
-// }
-// else{
-//     http.createServer(app).listen(port, () => {
-//       console.log(`Servidor HTTP en http://localhost:${port}`);
-//     });
-// }
 
 http.createServer(app).listen(port, () => {
   console.log(`Servidor HTTP en http://localhost:${port}`);
