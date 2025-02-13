@@ -89,20 +89,24 @@ app.post('/messages', requireApiKey, (req, res) => {
 });
 
 console.log('Entorno:', process.env.NODE_ENV);
-if(process.env.NODE_ENV === 'production') {
-    // Configuración de HTTPS
-    const options = {
-      cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem')),
-      key: fs.readFileSync(path.join(__dirname, 'privkey.pem'))
-    };
+// if(process.env.NODE_ENV === 'production') {
+//     // Configuración de HTTPS
+//     const options = {
+//       cert: fs.readFileSync(path.join(__dirname, 'fullchain.pem')),
+//       key: fs.readFileSync(path.join(__dirname, 'privkey.pem'))
+//     };
 
-    // Crear servidor HTTPS
-    https.createServer(options, app).listen(port, () => {
-      console.log(`Servidor HTTPS en https://cyberbunny.online:${port}`);
-    });
-}
-else{
-    http.createServer(app).listen(port, () => {
-      console.log(`Servidor HTTP en http://localhost:${port}`);
-    });
-}
+//     // Crear servidor HTTPS
+//     https.createServer(options, app).listen(port, () => {
+//       console.log(`Servidor HTTPS en https://cyberbunny.online:${port}`);
+//     });
+// }
+// else{
+//     http.createServer(app).listen(port, () => {
+//       console.log(`Servidor HTTP en http://localhost:${port}`);
+//     });
+// }
+
+http.createServer(app).listen(port, () => {
+  console.log(`Servidor HTTP en http://localhost:${port}`);
+});
